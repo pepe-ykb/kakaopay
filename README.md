@@ -11,7 +11,7 @@
 2. 문제 해결 방법
     - Spring Boot 기반으로하여 Ajax 통신으로 각각 API 4개 기능 결과가 나타납니다.
     - 고객 거래내역, 고객 데이터, 지점 데이터는 csv파일을 읽어서 추출하지 않고, MySQL을 사용하여 데이터 삽입 후 Query 조회 하였습니다.
-    - jdbc 정보는 아래와 같습니다.
+    - jdbc 정보는 다음과 같습니다.
         spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
         spring.datasource.jdbc-url=jdbc:mysql://localhost:3306/test?serverTimezone=UTC
         spring.datasource.username=kakaopay
