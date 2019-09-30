@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".noParameter").on("click", function () {
+                $(".result").text("");
+                var url = $(this).attr("class").split(" ")[1];
+                $.ajax({
+                    url:"/api/" + url
+                    ,method:"POST"
+                    ,success:function (data) {
+                        $(".result").text(data);
+                    },error:function () {
+                        alert("통신 에러가 발생하였습니다.");
+                    }
+                })
+            })
+
+            $(".api4").on("click", function () {
+                var code = $(".input_api4").val();
+                $(".result").text("");
+                $.ajax({
+                    url:"/api/api4"
+                    ,method:"POST"
+                    ,data:{code:code}
+                    ,success:function (data) {
+                        $(".result").text(data);
+                    },error:function () {
+                        alert("통신 에러가 발생하였습니다.");
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <h2>특정 고객 거래내역 조회 서비스</h2>
+    <button class="noParameter api1">API1</button>
+    <button class="noParameter api2">API2</button>
+    <button class="noParameter api3">API3</button>
+    <button class="api4">API4</button>
+    <select class="input_api4" style="height: 25px;">
+        <option value="A">판교점</option>
+        <option value="B">분당점</option>
+        <option value="C">강남점</option>
+        <option value="D">잠실점</option>
+    </select>
+    <br>
+    <p>RESULT</p>
+    <textarea class="result" style="width:100%; height: 500px;"></textarea>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kakao.dao.MainMapper">
+    <select id="connectTest" resultType="String">
+        SELECT NOW()
+    </select>
+    <select id="get1stAPI" resultType="kakao.vo.API1stVO">
+        SELECT year,
+               name,
+               acctno,
+               Max(sumAmt) AS sumAmt
+        FROM   (SELECT LEFT(a.deal_date, 4) AS year,
+                       b.name,
+                       a.account_no         AS acctNo,
+                       Sum(cash - fee)      AS sumAmt
+                FROM   deal_history a,
+                       account_info b
+                WHERE  a.account_no = b.no
+                       AND a.cancel_yn = 'N'
+                GROUP  BY year,
+                          a.account_no
+                ORDER  BY year DESC) AS c
+        GROUP  BY year
+    </select>
+
+    <select id="get2ndAPI" parameterType="java.util.List" resultType="kakao.vo.API2ndVO">
+        <foreach collection="list" index="index" item="item" separator="union all">
+            SELECT #{item} AS year,
+                    name,
+                    no     AS acctNo
+            FROM   account_info
+            WHERE  no NOT IN
+            (
+            SELECT DISTINCT d.account_no
+            FROM            deal_history d
+            WHERE           d.cancel_yn = 'N'
+            AND             LEFT(d.deal_date, 4) = #{item})
+        </foreach>
+    </select>
+
+    <select id="get3rdAPI" resultType="kakao.vo.API3thSubVO">
+        SELECT LEFT(d.deal_date, 4) AS year,
+               b.code               AS brCode,
+               b.name               AS brName,
+               Sum(d.cash - d.fee)  AS sumAmt
+        FROM   deal_history d,
+               bank_info b,
+               account_info a
+        WHERE  d.account_no = a.no
+               AND b.code = a.code
+               AND d.cancel_yn = 'N'
+        GROUP  BY year,
+                  brName
+        ORDER  BY sumamt DESC;
+    </select>
+
+    <select id="get4thAPI" parameterType="java.util.List" resultType="kakao.vo.DataList">
+        SELECT b.name              AS brName,
+               b.code              AS brCode,
+               Sum(d.cash - d.fee) AS sumAmt
+        FROM   deal_history d,
+               bank_info b,
+               account_info a
+        WHERE  b.code IN (
+                <foreach collection="list" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
+               AND d.account_no = a.no
+               AND b.code = a.code
+               AND d.cancel_yn = 'N';
+    </select>
+</mapper>
